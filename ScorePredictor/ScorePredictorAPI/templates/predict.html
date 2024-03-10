@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Score Predictor</title>
+  </head>
+  <body>
+    <h1>Score Predictor</h1>
+    <form id="predict-form">
+      {% csrf_token %}
+      <label for="study_hours">Study Hours:</label>
+      <input type="text" id="study_hours" name="study_hours" required />
+      <br />
+      <br />
+
+      <label for="previous_score">Previous Score:</label>
+      <input type="text" id="previous_score" name="previous_score" required />
+      <br />
+      <br />
+
+      <button type="button" onclick="predictScore()">Predict Score</button>
+    </form>
+
+    <br>
+    <br>
+    <div id="result"></div>
+
+    <script>
+      function predictScore() {
+        var form = document.getElementById("predict-form");
+        var formData = new FormData(form);
+
+        fetch('{% url "predict_score" %}', {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": document.getElementsByName("csrfmiddlewaretoken")[0]
+              .value,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerText =
+              "Predicted Result: " + data.predicted_result;
+          });
+      }
+    </script>
+  </body>
+</html>
